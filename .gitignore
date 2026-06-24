@@ -1,0 +1,14 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+outputs/
+.DS_Store
+
+# Original provided materials at project root — the live copy lives in data/
+/cases.json
+/Merchant Evidence Files/
+/Merchant Evidence Files-*.zip
+/Reason Codes.pdf
+/README.md.docx
+/~$*.docx
