@@ -1,0 +1,169 @@
+Technical Challenge: AI & Process Automation Specialist
+
+Role: AI & Process Automation Specialist - Process Architecture
+
+Time: ~4–6 hours over up to 2 days. Ship what you can, we'd rather see a rough, working
+
+end-to-end tool than a half-built polished one.
+
+What to submit: A GitHub repo (public or share access) & a video or documented
+
+walkthrough.
+
+
+
+The scenario
+
+You've just embedded with our Disputes team for a morning. Here's the workflow.
+
+
+
+When an issuing bank raises a chargeback against one of our merchants, the case lands in an analyst's queue. The analyst has to decide whether to represent the chargeback - i.e. push back against the issuer with compelling evidence - or accept the liability and let the merchant take the loss.
+
+Each case in the queue contains:
+
+
+
+
+
+The chargeback reason code raised by the issuer (e.g. Visa 13.1 "Merchandise/Services Not Received", Mastercard 4837 "No Cardholder Authorisation", and ~13 others in common rotation)
+
+
+
+Transaction metadata (merchant, MCC, amount, currency, AVS/CVV result, 3DS status, IP, device fingerprint, timestamps, BIN country)
+
+
+
+A short issuer narrative - the reason text the issuing bank submitted on behalf of the cardholder
+
+
+
+0-4 merchant evidence documents uploaded in response to our representment request - typically PDFs and images (delivery confirmations, AVS match logs, terms of service screenshots, prior transaction history with the same card, comms between merchant and cardholder)
+
+For each case, the analyst currently:
+
+
+
+
+
+Looks up the compelling evidence requirements for that specific reason code under that specific scheme. Visa and Mastercard have different rules, and every reason code has its own checklist.
+
+
+
+Goes through the merchant's uploaded evidence and decides whether it actually satisfies that checklist - or whether the merchant has uploaded something tangentially related but useless (this happens a lot).
+
+
+
+Writes a 3-5 sentence representment rationale for the file.
+
+
+
+Flags a recommended action: represent (we have a defensible case), accept_liability (we don't), or request_more_evidence (the merchant's submission has a fixable gap).
+
+A senior analyst told you: "The decision itself is usually clear in 90 seconds. The other 18 minutes is me re-reading the scheme rules, opening four PDFs to check one date, and writing up why. If a tool could just lay it all out for me — here's the rule, here's the evidence, here's the gap — I'd get through twice as many cases.
+
+
+
+Your task
+
+Build a tool that takes a chargeback case as input and produces an analyst-ready representment workup.
+
+
+
+Required functionality
+
+Your tool must:
+
+
+
+
+
+Accept a case as input. We've provided a small synthetic dataset (see "Provided materials" below) - 10 cases as JSON, each with reason code, transaction metadata, issuer narrative, and references to 0–4 merchant evidence files (mix of PDFs and images, also provided).
+
+
+
+Use an LLM to produce a structured representment workup containing:
+
+
+
+
+
+Reason code summary - a plain-English restatement of what the issuer is alleging and what compelling evidence the scheme requires to defend it
+
+
+
+Evidence assessment - for each compelling-evidence requirement, does the merchant's submission satisfy it? (satisfied / partial / missing), with a pointer to which document and where
+
+
+
+Representment rationale (3-5 sentences) ready for the analyst to edit and file Recommended action (represent / accept_liability / request_more_evidence) with a one-line justification
+
+
+
+If request_more_evidence: a specific list of what to ask the merchant for
+
+
+
+Handle the documents. Merchant evidence is in PDFs and images - delivery proofs, AVS logs, screenshots of T&Cs, etc. Your call how to process them: OCR, vision models, text extraction, or explicitly scoping out images with a note on the limitation. We want to see how you reason about the tradeoff.
+
+
+
+Expose it to an analyst. A minimal UI is fine - Gradio, Streamlit, a Retool-style mockup, even a well-designed CLI. The point is: imagine an analyst working 80 cases a day. What do they need to see at a glance, and what do they need to be able to override?
+
+
+
+Be runnable. A README that lets us run it end-to-end in under 10 minutes from git clone. Include a .env.example. Use whatever LLM provider you like (Anthropic, OpenAI, local). 
+
+
+
+What we're explicitly NOT asking for
+
+
+
+
+
+Production-grade error handling, auth, or deployment
+
+
+
+A custom-trained model - use a frontier LLM API
+
+
+
+Real scheme rules in their entirety - we'll give you a simplified version of the compelling evidence requirements for the reason codes in the dataset. Use those.
+
+
+
+Beautiful design (a clean, functional UI beats a pretty broken one)
+
+
+
+Coverage of edge cases beyond what's in the 10 provided cases
+
+
+
+Provided materials
+
+You'll receive a zip with:
+
+
+
+
+
+cases.json - 10 synthetic chargeback cases with reason code, transaction metadata, issuer narrative, and document references
+
+
+
+documents/ - ~25 PDF and image files referenced by the cases (synthetic delivery confirmations, AVS logs, T&Cs screenshots, etc.) 
+
+
+
+reason_codes.md - the 15 reason codes in the dataset with simplified compelling-evidence requirements per scheme
+
+
+
+README.md - schema details
+
+
+
+A few cases are deliberately ambiguous: the merchant has uploaded evidence that looks relevant but doesn't actually meet the requirement, or the requirement is met but buried inside a 12-page PDF. That's intentional. How your tool surfaces uncertainty and points the analyst at the right evidence matters more than whether it gets every recommendation "right."
