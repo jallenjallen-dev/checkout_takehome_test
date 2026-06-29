@@ -1,4 +1,4 @@
-"""Core flow: analyze_case(case) -> RepresentmentPack.
+_"""Core flow: analyze_case(case) -> RepresentmentPack.
 
 The LLM judges each compelling-evidence requirement (satisfied/partial/missing) with a
 citation. Python then applies the reason code's match rule (ALL / ANY_TWO / ANY_ONE) to
